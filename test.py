@@ -18,25 +18,18 @@ num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
 if "customers" not in st.session_state:
     st.session_state.customers = []
 
-# Create a table-like layout in landscape format
-col1, col2, col3, col4 = st.columns([1, 2, 2, 1])  # Define four columns
+# Function to add new customer data
+def add_customer():
+    # Assign customer ID
+    customer_id = f"Customer {len(st.session_state.customers) + 1}"
 
-# Input Fields for Customer Data
-st.header("Enter Customer Data")
-
-for i in range(1, 11):  # Example for 10 customers
-    # Input for customer ID (column 1)
-    customer_id = col1.text_input(f"Customer ID {i}", key=f"customer_id_{i}")
+    # Input fields for customer data
+    x_coord = st.number_input(f"x-coordinate ({customer_id})", min_value=-100, max_value=100, step=1, key=f"x_coord_{customer_id}")
+    y_coord = st.number_input(f"y-coordinate ({customer_id})", min_value=-100, max_value=100, step=1, key=f"y_coord_{customer_id}")
+    demand = st.number_input(f"Demand ({customer_id})", min_value=1, step=1, key=f"demand_{customer_id}")
     
-    # Input fields for x and y coordinates (columns 2 and 3)
-    x_coord = col2.number_input(f"x-coordinate (Customer {i})", min_value=-100, max_value=100, step=1, key=f"x_coord_{i}")
-    y_coord = col3.number_input(f"y-coordinate (Customer {i})", min_value=-100, max_value=100, step=1, key=f"y_coord_{i}")
-    
-    # Input for demand (column 4)
-    demand = col4.number_input(f"Demand (Customer {i})", min_value=1, step=1, key=f"demand_{i}")
-    
-    # Add customer data to session state if ID is provided
-    if customer_id and x_coord and y_coord and demand:
+    # Store customer data if all fields are provided
+    if x_coord and y_coord and demand:
         st.session_state.customers.append({
             "Customer_ID": customer_id,
             "X_Coordinate": x_coord,
@@ -44,7 +37,11 @@ for i in range(1, 11):  # Example for 10 customers
             "Demand": demand
         })
 
-# Display collected customer data as a table after input
+# Create a button to add new customer
+if st.button("Add Customer"):
+    add_customer()
+
+# Display customer data as a table
 if st.session_state.customers:
     customer_df = pd.DataFrame(st.session_state.customers)
     st.write("Customer Data Table:")
@@ -55,7 +52,7 @@ if st.button("Clear All Customers"):
     st.session_state.customers = []
     st.success("All customer data cleared.")
 
-# Define parameters for Genetic Algorithm
+# Genetic Algorithm related code
 depot = (0, 0)
 
 # Calculate distance between two points
@@ -161,7 +158,7 @@ def genetic_algorithm(customers, num_vehicles, num_generations, population_size,
     return best_solution, best_distance, fitness_history
 
 # Run the Genetic Algorithm
-if st.button("Run Genetic Algorithm") and st.session_state.customers:
+if st.button("Run Genetic Algorithm") and len(st.session_state.customers) >= 5:
     customers = {cust['Customer_ID']: cust for cust in st.session_state.customers}
 
     best_solution, best_distance, fitness_history = genetic_algorithm(customers, num_vehicles, num_generations, population_size, mutation_rate)
