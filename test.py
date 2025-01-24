@@ -24,6 +24,21 @@ default_data = [
     {"Customer_ID": 3, "X_Coordinate": 15, "Y_Coordinate": 5, "Demand": 6},
     {"Customer_ID": 4, "X_Coordinate": 7, "Y_Coordinate": 20, "Demand": 8},
     {"Customer_ID": 5, "X_Coordinate": 18, "Y_Coordinate": 25, "Demand": 3},
+    {"Customer_ID": 6, "X_Coordinate": 22, "Y_Coordinate": 8, "Demand": 5},
+    {"Customer_ID": 7, "X_Coordinate": 25, "Y_Coordinate": 12, "Demand": 7},
+    {"Customer_ID": 8, "X_Coordinate": 30, "Y_Coordinate": 18, "Demand": 9},
+    {"Customer_ID": 9, "X_Coordinate": 35, "Y_Coordinate": 30, "Demand": 2},
+    {"Customer_ID": 10, "X_Coordinate": 40, "Y_Coordinate": 5, "Demand": 3},
+    {"Customer_ID": 11, "X_Coordinate": 45, "Y_Coordinate": 10, "Demand": 5},
+    {"Customer_ID": 12, "X_Coordinate": 48, "Y_Coordinate": 15, "Demand": 6},
+    {"Customer_ID": 13, "X_Coordinate": 50, "Y_Coordinate": 25, "Demand": 4},
+    {"Customer_ID": 14, "X_Coordinate": 52, "Y_Coordinate": 35, "Demand": 7},
+    {"Customer_ID": 15, "X_Coordinate": 55, "Y_Coordinate": 40, "Demand": 2},
+    {"Customer_ID": 16, "X_Coordinate": 58, "Y_Coordinate": 45, "Demand": 3},
+    {"Customer_ID": 17, "X_Coordinate": 60, "Y_Coordinate": 12, "Demand": 8},
+    {"Customer_ID": 18, "X_Coordinate": 62, "Y_Coordinate": 8, "Demand": 5},
+    {"Customer_ID": 19, "X_Coordinate": 65, "Y_Coordinate": 5, "Demand": 6},
+    {"Customer_ID": 20, "X_Coordinate": 68, "Y_Coordinate": 20, "Demand": 7},
 ]
 
 # Initialize customer data in session state
