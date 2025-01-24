@@ -1,11 +1,8 @@
 import streamlit as st
-import random
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
+import numpy as np
 
-# Streamlit app title
+# Streamlit app
 st.title("Vehicle Routing Problem - Genetic Algorithm")
 
 # Sidebar for parameters
@@ -21,58 +18,64 @@ num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
 if "customers" not in st.session_state:
     st.session_state.customers = []
 
-# Function to add a new customer to the list
-def add_customer():
-    # Assign customer ID automatically
-    customer_id = f"Customer {len(st.session_state.customers) + 1}"
+# Create a table-like layout in landscape format
+col1, col2, col3, col4 = st.columns([1, 2, 2, 1])  # Define four columns
 
-    # Create a layout for customer input fields
-    st.write(f"Enter details for {customer_id}:")
-    cols = st.columns([2, 1, 1, 1])  # 4 columns for Customer ID, X, Y, and Demand
-    with cols[0]:
-        st.write(customer_id)
-    with cols[1]:
-        x_coord = st.number_input(f"x-coordinate ({customer_id})", min_value=-100, max_value=100, step=1, key=f"x_coord_{customer_id}")
-    with cols[2]:
-        y_coord = st.number_input(f"y-coordinate ({customer_id})", min_value=-100, max_value=100, step=1, key=f"y_coord_{customer_id}")
-    with cols[3]:
-        demand = st.number_input(f"Demand ({customer_id})", min_value=1, step=1, key=f"demand_{customer_id}")
+# Input Fields for Customer Data
+st.header("Enter Customer Data")
+
+for i in range(1, 11):  # Example for 10 customers
+    # Input for customer ID (column 1)
+    customer_id = col1.text_input(f"Customer ID {i}", key=f"customer_id_{i}")
     
-    # Store customer data if all fields are filled
-    if x_coord and y_coord and demand:
+    # Input fields for x and y coordinates (columns 2 and 3)
+    x_coord = col2.number_input(f"x-coordinate (Customer {i})", min_value=-100, max_value=100, step=1, key=f"x_coord_{i}")
+    y_coord = col3.number_input(f"y-coordinate (Customer {i})", min_value=-100, max_value=100, step=1, key=f"y_coord_{i}")
+    
+    # Input for demand (column 4)
+    demand = col4.number_input(f"Demand (Customer {i})", min_value=1, step=1, key=f"demand_{i}")
+    
+    # Add customer data to session state if ID is provided
+    if customer_id and x_coord and y_coord and demand:
         st.session_state.customers.append({
             "Customer_ID": customer_id,
             "X_Coordinate": x_coord,
             "Y_Coordinate": y_coord,
             "Demand": demand
         })
-        st.success(f"{customer_id} added successfully!")
 
-# Initially add the first 5 customers
-if len(st.session_state.customers) < 5:
-    add_customer()
-
-# Button to add more customers dynamically
-if st.button("Add Customer"):
-    add_customer()
+# Display collected customer data as a table after input
+if st.session_state.customers:
+    customer_df = pd.DataFrame(st.session_state.customers)
+    st.write("Customer Data Table:")
+    st.dataframe(customer_df)
 
 # Option to clear all customer data
 if st.button("Clear All Customers"):
     st.session_state.customers = []
     st.success("All customer data cleared.")
 
-# Display the customer data in a nice way without a big table
-if len(st.session_state.customers) > 0:
-    st.write("### Customer Data (Entered Customers):")
-    for customer in st.session_state.customers:
-        st.write(f"- **{customer['Customer_ID']}**: X: {customer['X_Coordinate']}, Y: {customer['Y_Coordinate']}, Demand: {customer['Demand']}")
+# Define parameters for Genetic Algorithm
+depot = (0, 0)
 
-# Function to calculate distance between two points
+# Calculate distance between two points
 def calculate_distance(p1, p2):
     return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
-# Genetic Algorithm functions
-def initialize_population(customers, num_vehicles):
+# Fitness Function
+def calculate_total_distance(solution, customers):
+    total_distance = 0
+    for route in solution:
+        current_location = depot
+        for customer_id in route:
+            customer = customers[customer_id]
+            total_distance += calculate_distance(current_location, (customer['X_Coordinate'], customer['Y_Coordinate']))
+            current_location = (customer['X_Coordinate'], customer['Y_Coordinate'])
+        total_distance += calculate_distance(current_location, depot)
+    return total_distance
+
+# Initialize population
+def initialize_population(customers, num_vehicles, population_size):
     population = []
     customer_ids = list(customers.keys())
     for _ in range(population_size):
@@ -94,18 +97,7 @@ def initialize_population(customers, num_vehicles):
         population.append(solution)
     return population
 
-def calculate_total_distance(solution, customers):
-    total_distance = 0
-    depot = (0, 0)
-    for route in solution:
-        current_location = depot
-        for customer_id in route:
-            customer = customers[customer_id]
-            total_distance += calculate_distance(current_location, (customer['X_Coordinate'], customer['Y_Coordinate']))
-            current_location = (customer['X_Coordinate'], customer['Y_Coordinate'])
-        total_distance += calculate_distance(current_location, depot)
-    return total_distance
-
+# Selection (Tournament Selection)
 def select_parents(population, fitness_values):
     parents = []
     for _ in range(2):
@@ -114,6 +106,7 @@ def select_parents(population, fitness_values):
         parents.append(population[best])
     return parents
 
+# Crossover (Order Crossover)
 def crossover(parent1, parent2):
     child = []
     for route1, route2 in zip(parent1, parent2):
@@ -122,15 +115,17 @@ def crossover(parent1, parent2):
         child.append(child_route)
     return child
 
-def mutate(solution):
+# Mutation (Swap Mutation)
+def mutate(solution, mutation_rate):
     for route in solution:
         if random.random() < mutation_rate and len(route) > 1:
             i, j = random.sample(range(len(route)), 2)
             route[i], route[j] = route[j], route[i]
     return solution
 
-def genetic_algorithm(customers, num_vehicles):
-    population = initialize_population(customers, num_vehicles)
+# Genetic Algorithm
+def genetic_algorithm(customers, num_vehicles, num_generations, population_size, mutation_rate):
+    population = initialize_population(customers, num_vehicles, population_size)
 
     best_solution = None
     best_distance = float('inf')
@@ -141,8 +136,8 @@ def genetic_algorithm(customers, num_vehicles):
         new_population = []
         for _ in range(population_size // 2):
             parent1, parent2 = select_parents(population, fitness_values)
-            child1 = mutate(crossover(parent1, parent2))
-            child2 = mutate(crossover(parent2, parent1))
+            child1 = mutate(crossover(parent1, parent2), mutation_rate)
+            child2 = mutate(crossover(parent2, parent1), mutation_rate)
             new_population.extend([child1, child2])
         population = new_population
 
@@ -165,45 +160,14 @@ def genetic_algorithm(customers, num_vehicles):
     st.warning("Target fitness not achieved within the generations.")
     return best_solution, best_distance, fitness_history
 
-# Convert customer data into dictionary format
-customers = {cust['Customer_ID']: cust for cust in st.session_state.customers}
+# Run the Genetic Algorithm
+if st.button("Run Genetic Algorithm") and st.session_state.customers:
+    customers = {cust['Customer_ID']: cust for cust in st.session_state.customers}
 
-# Button to run the Genetic Algorithm and show results
-if st.button("Run Genetic Algorithm") and len(st.session_state.customers) >= 5:
-    best_solution, best_distance, fitness_history = genetic_algorithm(customers, num_vehicles)
+    best_solution, best_distance, fitness_history = genetic_algorithm(customers, num_vehicles, num_generations, population_size, mutation_rate)
+    
     st.write("Best Solution:", best_solution)
     st.write("Best Distance:", best_distance)
 
-    # Plot the solution
-    def plot_solution(solution, customers):
-        plt.figure(figsize=(10, 8))
-
-        # Plot depot
-        plt.scatter(0, 0, color='red', s=100, marker='X', label="Depot")
-
-        # Define colors for routes
-        vehicle_colors = ['green', 'purple', 'orange', 'brown', 'cyan', 'blue', 'pink', 'yellow']
-
-        # Create legend handles
-        legend_handles = [mlines.Line2D([], [], color='red', marker='X', linestyle='None', markersize=10, label="Depot")]
-
-        # Plot the routes for each vehicle
-        for idx, route in enumerate(solution):
-            color = vehicle_colors[idx % len(vehicle_colors)]
-            current_location = (0, 0)  # Start from depot
-            for customer_id in route:
-                customer = customers[customer_id]
-                plt.scatter(customer['X_Coordinate'], customer['Y_Coordinate'], color=color, s=50)
-                plt.text(customer['X_Coordinate'], customer['Y_Coordinate'], f' {customer_id}', fontsize=9)
-                plt.plot([current_location[0], customer['X_Coordinate']], [current_location[1], customer['Y_Coordinate']], color=color)
-                current_location = (customer['X_Coordinate'], customer['Y_Coordinate'])
-            plt.plot([current_location[0], 0], [current_location[1], 0], color=color)  # Back to depot
-
-        plt.title("Vehicle Routing Problem - Solution Visualization")
-        plt.xlabel("X Coordinate")
-        plt.ylabel("Y Coordinate")
-        plt.legend(handles=legend_handles, loc="best")
-        plt.grid(True)
-        st.pyplot(plt)
-
-    plot_solution(best_solution, customers)
+    # Plot the solution (You can reuse the previous plot_solution function for visualization)
+    # ...
