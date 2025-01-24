@@ -17,14 +17,17 @@ if uploaded_file:
     st.write("Dataset preview:")
     st.dataframe(data.head())
 
+    # Sidebar for parameters
+    st.sidebar.header("Genetic Algorithm Parameters")
+    vehicle_capacity = st.sidebar.number_input("Vehicle Capacity", value=15, step=1)
+    num_generations = st.sidebar.number_input("Number of Generations", value=100, step=1)
+    population_size = st.sidebar.number_input("Population Size", value=50, step=1)
+    mutation_rate = st.sidebar.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
+    target_fitness = st.sidebar.number_input("Target Fitness", value=950, step=1)
+    num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
+
     # Define parameters
     depot = (0, 0)
-    vehicle_capacity = st.number_input("Vehicle Capacity", value=15, step=1)
-    num_generations = st.number_input("Number of Generations", value=100, step=1)
-    population_size = st.number_input("Population Size", value=50, step=1)
-    mutation_rate = st.slider("Mutation Rate", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
-    target_fitness = st.number_input("Target Fitness", value=950, step=1)
-    num_vehicles = st.number_input("Number of Vehicles", value=5, step=1)
 
     # Calculate distance between two points
     def calculate_distance(p1, p2):
