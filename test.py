@@ -19,11 +19,11 @@ num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
 
 # Default customer data
 default_data = [
-    {"Customer_ID": 1, "X_Coordinate": 10, "Y_Coordinate": 15, "Demand": 5},
-    {"Customer_ID": 2, "X_Coordinate": 20, "Y_Coordinate": 25, "Demand": 10},
-    {"Customer_ID": 3, "X_Coordinate": 30, "Y_Coordinate": 35, "Demand": 5},
-    {"Customer_ID": 4, "X_Coordinate": 40, "Y_Coordinate": 45, "Demand": 10},
-    {"Customer_ID": 5, "X_Coordinate": 50, "Y_Coordinate": 55, "Demand": 5},
+    {"Customer_ID": 1, "X_Coordinate": 5, "Y_Coordinate": 10, "Demand": 2},
+    {"Customer_ID": 2, "X_Coordinate": 10, "Y_Coordinate": 15, "Demand": 4},
+    {"Customer_ID": 3, "X_Coordinate": 15, "Y_Coordinate": 5, "Demand": 6},
+    {"Customer_ID": 4, "X_Coordinate": 7, "Y_Coordinate": 20, "Demand": 8},
+    {"Customer_ID": 5, "X_Coordinate": 18, "Y_Coordinate": 25, "Demand": 3},
 ]
 
 # Initialize customer data
