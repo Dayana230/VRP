@@ -17,19 +17,22 @@ mutation_rate = st.sidebar.slider("Mutation Rate", min_value=0.0, max_value=1.0,
 target_fitness = st.sidebar.number_input("Target Fitness", value=950, step=1)
 num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
 
-default_data = {
-    "Customer_ID": [1, 2, 3, 4, 5],
-    "X_Coordinate": [10, 20, 30, 40, 50],
-    "Y_Coordinate": [15, 25, 35, 45, 55],
-    "Demand": [5, 10, 5, 10, 5]
-}
+# Default customer data
+default_data = [
+    {"Customer_ID": 1, "X_Coordinate": 10, "Y_Coordinate": 15, "Demand": 5},
+    {"Customer_ID": 2, "X_Coordinate": 20, "Y_Coordinate": 25, "Demand": 10},
+    {"Customer_ID": 3, "X_Coordinate": 30, "Y_Coordinate": 35, "Demand": 5},
+    {"Customer_ID": 4, "X_Coordinate": 40, "Y_Coordinate": 45, "Demand": 10},
+    {"Customer_ID": 5, "X_Coordinate": 50, "Y_Coordinate": 55, "Demand": 5},
+]
 
-# Allow user to edit customer data
-data = pd.DataFrame(default_data)
-st.write("Modify Customer Data Below:")
-edited_data = st.experimental_data_editor(data, num_rows="dynamic")
+# Customer data input table
+st.write("Enter or modify customer data:")
+customer_data = st.experimental_data_editor(pd.DataFrame(default_data), num_rows="dynamic")
 
-# Define parameters
+# Convert customer data into a dictionary
+customers = customer_data.set_index('Customer_ID').T.to_dict()
+
 depot = (0, 0)
 
 # Calculate distance between two points
@@ -132,9 +135,6 @@ def genetic_algorithm(customers, num_vehicles):
     # If target fitness was not achieved, return the best found solution after all generations
     st.warning("Target fitness not achieved within the generations.")
     return best_solution, best_distance, fitness_history
-
-# Create the customers dictionary from the DataFrame
-customers = edited_data.set_index('Customer_ID').T.to_dict()
 
 # Run the Genetic Algorithm
 if st.button("Run Genetic Algorithm"):
