@@ -17,21 +17,17 @@ mutation_rate = st.sidebar.slider("Mutation Rate", min_value=0.0, max_value=1.0,
 target_fitness = st.sidebar.number_input("Target Fitness", value=950, step=1)
 num_vehicles = st.sidebar.number_input("Number of Vehicles", value=5, step=1)
 
+# Initialize session state for customers data if not already initialized
+if "customers" not in st.session_state:
+    st.session_state.customers = []
+
 # Customer Data Input Form as a table
 st.header("Enter Customer Data")
-
-# Table initialization with columns
-customer_data = {
-    "Customer_ID": [],
-    "X_Coordinate": [],
-    "Y_Coordinate": [],
-    "Demand": []
-}
 
 # Number of customers
 num_customers = st.number_input("Number of Customers", value=5, step=1)
 
-# Collect customer data
+# Collect customer data dynamically
 for i in range(num_customers):
     customer_id = i + 1
     st.subheader(f"Customer {customer_id}")
@@ -39,18 +35,21 @@ for i in range(num_customers):
     y_coord = st.number_input(f"Y Coordinate for Customer {customer_id}", key=f"y_{i}", min_value=-100, max_value=100)
     demand = st.number_input(f"Demand for Customer {customer_id}", key=f"demand_{i}", value=1, step=1)
     
-    # Append customer data to the table
-    customer_data["Customer_ID"].append(customer_id)
-    customer_data["X_Coordinate"].append(x_coord)
-    customer_data["Y_Coordinate"].append(y_coord)
-    customer_data["Demand"].append(demand)
+    # When user submits data, store it in session state
+    if st.button(f"Add Customer {customer_id}"):
+        st.session_state.customers.append({
+            "Customer_ID": customer_id,
+            "X_Coordinate": x_coord,
+            "Y_Coordinate": y_coord,
+            "Demand": demand
+        })
+        st.success(f"Customer {customer_id} added.")
 
-# Convert to DataFrame
-customers_df = pd.DataFrame(customer_data)
-
-# Display the customer table
-st.write("Customer Data Table:")
-st.dataframe(customers_df)
+# Display customers in a table format after entering
+if len(st.session_state.customers) > 0:
+    customer_df = pd.DataFrame(st.session_state.customers)
+    st.write("Current Customer Data Table:")
+    st.dataframe(customer_df)
 
 # Define parameters
 depot = (0, 0)
@@ -157,7 +156,7 @@ def genetic_algorithm(customers, num_vehicles):
     return best_solution, best_distance, fitness_history
 
 # Convert customer data into dictionary for the algorithm
-customers = customers_df.set_index('Customer_ID').T.to_dict()
+customers = {cust["Customer_ID"]: cust for cust in st.session_state.customers}
 
 # Run the Genetic Algorithm
 if st.button("Run Genetic Algorithm"):
