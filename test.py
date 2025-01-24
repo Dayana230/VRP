@@ -195,4 +195,15 @@ if st.button("Run Genetic Algorithm") and len(st.session_state.customers) >= 5:
                 customer = customers[customer_id]
                 plt.scatter(customer['X_Coordinate'], customer['Y_Coordinate'], color=color, s=50)
                 plt.text(customer['X_Coordinate'], customer['Y_Coordinate'], f' {customer_id}', fontsize=9)
-                plt.plot([current_location[0], customer['X_Coordinate
+                plt.plot([current_location[0], customer['X_Coordinate']], [current_location[1], customer['Y_Coordinate']], color=color)
+                current_location = (customer['X_Coordinate'], customer['Y_Coordinate'])
+            plt.plot([current_location[0], 0], [current_location[1], 0], color=color)  # Back to depot
+
+        plt.title("Vehicle Routing Problem - Solution Visualization")
+        plt.xlabel("X Coordinate")
+        plt.ylabel("Y Coordinate")
+        plt.legend(handles=legend_handles, loc="best")
+        plt.grid(True)
+        st.pyplot(plt)
+
+    plot_solution(best_solution, customers)
