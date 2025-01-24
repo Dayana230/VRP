@@ -26,7 +26,8 @@ def add_customer():
     # Assign customer ID automatically
     customer_id = f"Customer {len(st.session_state.customers) + 1}"
 
-    # Input fields for customer data in a row
+    # Create a layout for customer input fields
+    st.write(f"Enter details for {customer_id}:")
     cols = st.columns([2, 1, 1, 1])  # 4 columns for Customer ID, X, Y, and Demand
     with cols[0]:
         st.write(customer_id)
@@ -45,6 +46,7 @@ def add_customer():
             "Y_Coordinate": y_coord,
             "Demand": demand
         })
+        st.success(f"{customer_id} added successfully!")
 
 # Initially add the first 5 customers
 if len(st.session_state.customers) < 5:
@@ -54,36 +56,16 @@ if len(st.session_state.customers) < 5:
 if st.button("Add Customer"):
     add_customer()
 
-# Create a layout with a table header and rows for each customer
-if len(st.session_state.customers) > 0:
-    st.write("Customer Data:")
-    cols = st.columns([2, 1, 1, 1])  # 4 columns for Customer ID, X, Y, and Demand
-    
-    # Header row for the table
-    with cols[0]:
-        st.write("Customer ID")
-    with cols[1]:
-        st.write("X Coordinate")
-    with cols[2]:
-        st.write("Y Coordinate")
-    with cols[3]:
-        st.write("Demand")
-    
-    # Rows for each customer
-    for customer in st.session_state.customers:
-        with cols[0]:
-            st.write(customer['Customer_ID'])
-        with cols[1]:
-            st.write(customer['X_Coordinate'])
-        with cols[2]:
-            st.write(customer['Y_Coordinate'])
-        with cols[3]:
-            st.write(customer['Demand'])
-
 # Option to clear all customer data
 if st.button("Clear All Customers"):
     st.session_state.customers = []
     st.success("All customer data cleared.")
+
+# Display the customer data in a nice way without a big table
+if len(st.session_state.customers) > 0:
+    st.write("### Customer Data (Entered Customers):")
+    for customer in st.session_state.customers:
+        st.write(f"- **{customer['Customer_ID']}**: X: {customer['X_Coordinate']}, Y: {customer['Y_Coordinate']}, Demand: {customer['Demand']}")
 
 # Function to calculate distance between two points
 def calculate_distance(p1, p2):
@@ -213,19 +195,4 @@ if st.button("Run Genetic Algorithm") and len(st.session_state.customers) >= 5:
                 customer = customers[customer_id]
                 plt.scatter(customer['X_Coordinate'], customer['Y_Coordinate'], color=color, s=50)
                 plt.text(customer['X_Coordinate'], customer['Y_Coordinate'], f' {customer_id}', fontsize=9)
-                plt.plot([current_location[0], customer['X_Coordinate']],
-                         [current_location[1], customer['Y_Coordinate']], color=color, linestyle='-', marker='o')
-                current_location = (customer['X_Coordinate'], customer['Y_Coordinate'])
-            plt.plot([current_location[0], 0], [current_location[1], 0], color=color, linestyle='-', marker='X')
-
-            # Add to legend
-            legend_handles.append(mlines.Line2D([], [], color=color, marker='o', linestyle='-', markersize=6, label=f"Vehicle {idx+1}"))
-
-        plt.title("Vehicle Routing Problem - Solution Visualization")
-        plt.xlabel("X Coordinate")
-        plt.ylabel("Y Coordinate")
-        plt.legend(handles=legend_handles, loc="best")
-        plt.grid(True)
-        st.pyplot(plt)
-
-    plot_solution(best_solution, customers)
+                plt.plot([current_location[0], customer['X_Coordinate
