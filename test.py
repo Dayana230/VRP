@@ -45,11 +45,6 @@ default_data = [
 if "customer_data" not in st.session_state:
     st.session_state.customer_data = pd.DataFrame(default_data)
 
-# Reset data button
-if st.button("Reset Data"):
-    st.session_state.customer_data = pd.DataFrame(default_data)
-    st.experimental_rerun() 
-
 # Input and modify customer data
 st.write("### Customer Details")
 
@@ -64,7 +59,7 @@ if st.button("Add Customer"):
     st.session_state.customer_data = pd.concat(
         [st.session_state.customer_data, pd.DataFrame([new_customer])], ignore_index=True
     )
-    st.experimental_rerun()
+   
 # Display and allow modification of customer data
 edited_data = []
 columns = ["Customer_ID", "X_Coordinate", "Y_Coordinate", "Demand"]
