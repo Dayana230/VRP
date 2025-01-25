@@ -56,11 +56,6 @@ if st.button("Add Customer"):
         [st.session_state.customer_data, pd.DataFrame([new_customer])], ignore_index=True
     )
 
-# Reset data button
-if st.button("Reset Data"):
-    st.session_state.customer_data = pd.DataFrame(default_data)
-    st.success("Customer data has been reset to default.")
-
 # Display and allow modification of customer data
 edited_data = []
 columns = ["Customer_ID", "X_Coordinate", "Y_Coordinate", "Demand"]
