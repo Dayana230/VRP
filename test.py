@@ -41,6 +41,15 @@ default_data = [
     {"Customer_ID": 20, "X_Coordinate": 68, "Y_Coordinate": 20, "Demand": 7},
 ]
 
+# Initialize customer data in session state
+if "customer_data" not in st.session_state:
+    st.session_state.customer_data = pd.DataFrame(default_data)
+
+# Reset data button
+if st.button("Reset Data"):
+    st.session_state.customer_data = pd.DataFrame(default_data)
+    st.success("Customer data has been reset to default.")
+
 # Input and modify customer data
 st.write("### Customer Details")
 
