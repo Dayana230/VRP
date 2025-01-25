@@ -41,11 +41,6 @@ default_data = [
     {"Customer_ID": 20, "X_Coordinate": 68, "Y_Coordinate": 20, "Demand": 7},
 ]
 
-# Initialize customer data in session state
-if "customer_data" not in st.session_state:
-    st.session_state.customer_data = pd.DataFrame(default_data)
-
-
 # Input and modify customer data
 st.write("### Customer Details")
 
