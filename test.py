@@ -48,7 +48,12 @@ if "customer_data" not in st.session_state:
 # Reset data button
 if st.button("Reset Data"):
     st.session_state.customer_data = pd.DataFrame(default_data)
+    st.session_state.reset_flag = True  # Set a flag to trigger UI updates
     st.success("Customer data has been reset to default.")
+
+# Initialize reset flag in session state if not present
+if "reset_flag" not in st.session_state:
+    st.session_state.reset_flag = False
 
 # Input and modify customer data
 st.write("### Customer Details")
@@ -88,6 +93,9 @@ for idx, row in st.session_state.customer_data.iterrows():
 
 # Update session state with edited data
 st.session_state.customer_data = pd.DataFrame(edited_data)
+
+# Reset the flag after re-rendering
+st.session_state.reset_flag = False
 
 # Display customer data table
 st.write("### Current Customer Data")
